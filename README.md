@@ -12,6 +12,8 @@ Welcome to the documentation for NexxClone, a Python library for Discord server 
 - [Contributing](#contributing)
 - [License](#license)
 
+**Installation**
+
 # Installation
 
 To get started with NexxClone, you'll need to install it using `pip`. Make sure you have Python 3.6 or higher installed.
@@ -113,7 +115,7 @@ NexxClone is licensed under the MIT License. See the [LICENSE](https://github.co
 Thank you for using NexxClone!
 
 Feel free to customize this template according to your project structure and specific details. Also, make sure to replace the placeholder URLs and GitHub repository links with your actual project information.
-```
+
 
 # Contributing
 Feel free to contribute by opening issues or creating pull requests. Your feedback and suggestions are welcome!
