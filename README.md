@@ -1,6 +1,3 @@
-
-Certainly! Below is a basic template for a GitBook documentation. You can customize it further based on your needs.
-
 **Introduction**
 
 # NexxClone Documentation
@@ -14,8 +11,6 @@ Welcome to the documentation for NexxClone, a Python library for Discord server 
 - [Examples](#examples)
 - [Contributing](#contributing)
 - [License](#license)
-
-**Installation**
 
 # Installation
 
