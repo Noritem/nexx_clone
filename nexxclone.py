@@ -4,6 +4,10 @@ import os
 from time import sleep
 import pyperclip
 
+# Initialize colorama for colored console output
+init(autoreset=True)
+
+# Helper functions for printing messages with specific formatting
 def print_add(message):
     print(f'{Fore.GREEN}[+]{Style.RESET_ALL} {message}')
 
@@ -13,32 +17,36 @@ def print_delete(message):
 def print_warning(message):
     print(f'{Fore.RED}[WARNING]{Style.RESET_ALL} {message}')
 
-
 def print_error(message):
     print(f'{Fore.RED}[ERROR]{Style.RESET_ALL} {message}')
 
 
+# Class definition for the Clone operations
 class Clone:
+    # Method to delete roles in a guild
     @staticmethod
-    async def roles_delete(guild_to: discord.Guild):
-            for role in guild_to.roles:
-                try:
-                    if role.name != "@everyone":
-                        await role.delete()
-                        print_delete(f"Deleted Role: {role.name}")
-                except discord.Forbidden:
-                    print_error(f"Error While Deleting Role: {role.name}")
-                except discord.HTTPException:
-                    print_error(f"Unable to Delete Role: {role.name}")
+    async def roledelete(guild_to: discord.Guild):
+        for role in guild_to.roles:
+            try:
+                if role.name != "@everyone":
+                    await role.delete()
+                    print_delete(f"Deleted Role: {role.name}")
+            except discord.Forbidden:
+                print_error(f"Error While Deleting Role: {role.name}")
+            except discord.HTTPException:
+                print_error(f"Unable to Delete Role: {role.name}")
 
+    # Method to create roles in a guild based on another guild's roles
     @staticmethod
-    async def roles_create(guild_to: discord.Guild, guild_from: discord.Guild):
+    async def rolecreate(guild_to: discord.Guild, guild_from: discord.Guild):
         roles = []
         role: discord.Role
+        # Collect roles from the source guild (excluding "@everyone")
         for role in guild_from.roles:
             if role.name != "@everyone":
                 roles.append(role)
-        roles = roles[::-1]
+        roles = roles[::-1]  # Reverse roles to maintain order
+        # Create roles in the destination guild
         for role in roles:
             try:
                 await guild_to.create_role(
@@ -54,8 +62,9 @@ class Clone:
             except discord.HTTPException:
                 print_error(f"Unable to Create Role: {role.name}")
 
+    # Method to delete channels in a guild
     @staticmethod
-    async def channels_delete(guild_to: discord.Guild):
+    async def chdelete(guild_to: discord.Guild):
         for channel in guild_to.channels:
             try:
                 await channel.delete()
@@ -65,8 +74,9 @@ class Clone:
             except discord.HTTPException:
                 print_error(f"Unable To Delete Channel: {channel.name}")
 
+    # Method to create categories in a guild based on another guild's categories
     @staticmethod
-    async def categories_create(guild_to: discord.Guild, guild_from: discord.Guild):
+    async def catcreate(guild_to: discord.Guild, guild_from: discord.Guild):
         channels = guild_from.categories
         channel: discord.CategoryChannel
         new_channel: discord.CategoryChannel
@@ -86,8 +96,9 @@ class Clone:
             except discord.HTTPException:
                 print_error(f"Unable To Delete Category: {channel.name}")
 
+    # Method to create text and voice channels in a guild based on another guild's channels
     @staticmethod
-    async def channels_create(guild_to: discord.Guild, guild_from: discord.Guild):
+    async def chcreate(guild_to: discord.Guild, guild_from: discord.Guild):
         channel_text: discord.TextChannel
         channel_voice: discord.VoiceChannel
         category = None
@@ -107,13 +118,17 @@ class Clone:
                     role = discord.utils.get(guild_to.roles, name=key.name)
                     overwrites_to[role] = value
                 try:
-                    new_channel = await guild_to.create_text_channel(
-                        name=channel_text.name,
-                        overwrites=overwrites_to,
-                        position=channel_text.position,
-                        topic=channel_text.topic,
-                        slowmode_delay=channel_text.slowmode_delay,
-                        nsfw=channel_text.nsfw)
+                    # If channel name starts with ticket- or ticket_ or ticket, don't create it
+                    if channel_text.name.startswith("ticket-") or channel_text.name.startswith("ticket_") or channel_text.name.startswith("ticket"):
+                        pass
+                    else:
+                        new_channel = await guild_to.create_text_channel(
+                            name=channel_text.name,
+                            overwrites=overwrites_to,
+                            position=channel_text.position,
+                            topic=channel_text.topic,
+                            slowmode_delay=channel_text.slowmode_delay,
+                            nsfw=channel_text.nsfw)
                 except:
                     new_channel = await guild_to.create_text_channel(
                         name=channel_text.name,
@@ -121,7 +136,10 @@ class Clone:
                         position=channel_text.position)
                 if category is not None:
                     await new_channel.edit(category=category)
-                print_add(f"Created Text Channel: {channel_text.name}")
+                if channel_text.name.startswith("ticket-") or channel_text.name.startswith("ticket_") or channel_text.name.startswith("ticket"):
+                    print_warning(f"Channel {channel_text.name} is a ticket channel, not creating it")
+                else:
+                    print_add(f"Created Text Channel: {channel_text.name}")
             except discord.Forbidden:
                 print_error(f"Error While Creating Text Channel: {channel_text.name}")
             except discord.HTTPException:
@@ -168,9 +186,9 @@ class Clone:
             except:
                 print_error(f"Error While Creating Voice Channel: {channel_voice.name}")
 
-
+    # Method to delete emojis in a guild
     @staticmethod
-    async def emojis_delete(guild_to: discord.Guild):
+    async def emodelete(guild_to: discord.Guild):
         for emoji in guild_to.emojis:
             try:
                 await emoji.delete()
@@ -180,8 +198,9 @@ class Clone:
             except discord.HTTPException:
                 print_error(f"Error While Deleting Emoji {emoji.name}")
 
+    # Method to create emojis in a guild based on another guild's emojis
     @staticmethod
-    async def emojis_create(guild_to: discord.Guild, guild_from: discord.Guild):
+    async def emocreate(guild_to: discord.Guild, guild_from: discord.Guild):
         emoji: discord.Emoji
         for emoji in guild_from.emojis:
             try:
@@ -195,8 +214,9 @@ class Clone:
             except discord.HTTPException:
                 print_error(f"Error While Creating Emoji {emoji.name}")
 
+    # Method to edit the guild information (name and icon) in the destination guild
     @staticmethod
-    async def guild_edit(guild_to: discord.Guild, guild_from: discord.Guild):
+    async def guedit(guild_to: discord.Guild, guild_from: discord.Guild):
         try:
             try:
                 icon_image = await guild_from.icon_url.read()
@@ -212,9 +232,10 @@ class Clone:
                     print_error(f"Error While Changing Guild Icon: {guild_to.name}")
         except discord.Forbidden:
             print_error(f"Error While Changing Guild Icon: {guild_to.name}")
-            
+
+    # Method to create a template for the destination guild
     @staticmethod
-    async def guild_template(guild_to: discord.Guild):
+    async def gutemplate(guild_to: discord.Guild):
         try:
             existing_templates = await guild_to.templates()
             for template in existing_templates:
@@ -230,3 +251,22 @@ class Clone:
             print_error(f"Error While Creating Template: {guild_to.name}")
         except discord.HTTPException:
             print_error(f"Error While Creating Template: {guild_to.name}")
+
+    # Method to perform all cloning operations at once
+    @staticmethod
+    async def all(guild_to: discord.Guild, guild_from: discord.Guild):
+        await Clone.roledelete(guild_to)
+        await Clone.chdelete(guild_to)
+        await Clone.rolecreate(guild_to, guild_from)
+        await Clone.catcreate(guild_to, guild_from)
+        await Clone.chcreate(guild_to, guild_from)
+        await Clone.emodelete(guild_to)
+        await Clone.emocreate(guild_to, guild_from)
+        await Clone.guedit(guild_to, guild_from)
+        await Clone.gutemplate(guild_to)
+
+# Sample usage:
+# client = discord.Client()
+# destination_guild = client.get_guild(destination_guild_id)
+# source_guild = client.get_guild(source_guild_id)
+# await Clone.all(destination_guild, source_guild)
