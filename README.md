@@ -1,1 +1,1 @@
-moved to https://discord.gg/YxPZeSJr
+moved to [https://discord.gg/YxPZeSJr](https://discord.gg/yZxX9C6V)
