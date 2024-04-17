@@ -1,1 +1,1 @@
-moved to [https://discord.gg/YxPZeSJr](https://discord.gg/yZxX9C6V)
+moved to [https://discord.gg/cloner](https://discord.gg/cloner)
